@@ -44,13 +44,14 @@ public class JournalEntryController2 {
 
     @PutMapping("/update/{id}")
     public ResponseEntity<?> updateByID(@PathVariable String id, @RequestBody JournalEntry myEntry1) {
-        try {
+       JournalEntry journalEntry = journalService.findById(id).orElse(null);
+       if (journalEntry != null) {
+           journalEntry.setName(journalEntry.getName() != null && journalEntry.getName().equals("") ? myEntry1.getName() : journalEntry.getName());
+           journalEntry.setName(journalEntry.getContent() != null && journalEntry.getContent().equals("") ? myEntry1.getContent() : journalEntry.getContent());
             journalService.updateEntry(id, myEntry1);
-            return new ResponseEntity<>(myEntry1, HttpStatus.OK);
-        } catch (Exception ex) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-
+            return new ResponseEntity<>(HttpStatus.OK);
+       }
+       return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @DeleteMapping("/delete/{id}")
